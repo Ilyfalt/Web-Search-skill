@@ -65,10 +65,51 @@ def test_news_apiclick_decode():
     assert news_real_url(link) == "https://www.example.com/新闻"
     print("test_news_apiclick_decode OK", news_real_url(link))
 
+# ---- gh.py 网页抓取规则（复用 gh.py 的提取逻辑） ----
+def gh_extract(html):
+    out = {}
+    m = re.search(r"aria-label=\"([\d.,k]+)\s+users? starred this repository\"", html)
+    if m:
+        raw = m.group(1).replace(",", "")
+        if raw.endswith("k"):
+            raw = str(int(float(raw[:-1]) * 1000))
+        out["stars"] = raw
+    m = re.search(r'<meta name="description" content="([^"]*)"', html)
+    if m:
+        out["description"] = m.group(1).split(" - ")[0].strip()
+    m = re.search(r'"website"\s*:\s*"([^"]*)"', html)
+    if m:
+        out["homepage"] = m.group(1)
+    m = re.search(r'"topics"\s*:\s*\[(.*?)\]', html)
+    if m:
+        topics = re.findall(r'"name"\s*:\s*"([^"]*)"', m.group(1))
+        if topics:
+            out["topics"] = topics
+    return out
+
+def test_gh_stars_and_website():
+    html = ('<meta name="description" content="A blog framework - hexojs/hexo">'
+            'aria-label="41.8k users starred this repository"'
+            '"website":"https://hexo.io"'
+            '"topics":[{"name":"hexo"},{"name":"blog"}]')
+    d = gh_extract(html)
+    assert d["stars"] == "41800"
+    assert d["homepage"] == "https://hexo.io"
+    assert d["description"] == "A blog framework"
+    assert d["topics"] == ["hexo", "blog"]
+    print("test_gh_stars_and_website OK", d)
+
+def test_gh_moved():
+    html = "This repository has been moved to freshframework/fresh."
+    assert re.search(r"This repository has been moved to\s*([^\s<]+)", html).group(1).rstrip(".") == "freshframework/fresh"
+    print("test_gh_moved OK")
+
 if __name__ == "__main__":
     test_extract()
     test_ddg_redirect_decode()
     test_bing_algo()
     test_news_re()
     test_news_apiclick_decode()
+    test_gh_stars_and_website()
+    test_gh_moved()
     print("ALL TESTS PASSED")

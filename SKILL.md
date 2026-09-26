@@ -1,6 +1,6 @@
 ---
 name: web-search
-description: 用多引擎获取信息的能力包：DuckDuckGo 网页、Bing 网页、Bing News RSS 一次并行搜索并合并结果，附带反封禁、浏览器登录降风控。执行"搜索 X / 用搜索引擎搜一下 / 搜索并给我信息"这类任务时使用。
+description: 用多引擎获取信息的能力包：DuckDuckGo 网页、Bing 网页、Bing News RSS 一次并行搜索并合并结果，附带反封禁、GitHub 网页抓取（绕过 API 匿名限流）、浏览器登录降风控。执行"搜索 X / 用搜索引擎搜一下 / 搜索并给我信息 / 查 GitHub 仓库信息"这类任务时使用。
 ---
 
 # 网页搜索 Web Search
@@ -16,7 +16,9 @@ description: 用多引擎获取信息的能力包：DuckDuckGo 网页、Bing 网
 | [03-anti-block.md](03-anti-block.md) | 被墙诊断、多引擎策略、UA 轮换、限速、缓存 | 被拦截/结果异常时 |
 | [04-webview-login.md](04-webview-login.md) | 用真实浏览器内核登录降风控（WebView + cookie 持久化） | 需要登录态/大量搜索时 |
 | [05-cli-script.md](05-cli-script.md) | 可直接跑的 CLI/脚本骨架（Python 标准库） | 要自动化抓取时 |
+| [06-github-web.md](06-github-web.md) | GitHub 网页抓取（绕过 API 匿名限流，无需令牌） | 查 GitHub 仓库信息时 |
 | [gs.py](gs.py) | 实测可用的多引擎并行 CLI（DDG + Bing + News） | 直接跑 |
+| [gh.py](gh.py) | 零依赖 GitHub 仓库信息查询 CLI（网页抓取） | 直接跑 |
 
 ## 快速上手（30 秒版）
 
@@ -36,6 +38,8 @@ xml = urllib.request.urlopen(url, timeout=12).read().decode("utf-8", "ignore")
 ```
 
 或直接用 [gs.py](gs.py)：`python3 gs.py "关键词" [条数]`，一次并行查全部引擎并合并结果。
+
+查 GitHub 仓库信息（star/描述/homepage/topics/README）：`python3 gh.py owner/repo [--readme]`，网页抓取不走 API，**不受匿名限流影响，无需令牌**（见 [06](06-github-web.md)）。
 
 ## 最核心的经验
 

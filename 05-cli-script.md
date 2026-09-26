@@ -22,6 +22,18 @@ python3 gs.py "OpenAI 最新消息" 5
 
 > 说明：**Bing News RSS（`format=rss`，不带地区参数）最稳**，基本总能出结果；DDG/Bing 网页视 IP 风控情况可能被墙，脚本会把它记入 note，其余引擎照常返回。生产版建议 requests + beautifulsoup，并开启 03 的限速与 LRU 缓存。
 
+## gh.py —— GitHub 仓库信息查询（网页抓取，绕过 API 匿名限流）
+
+文件：[gh.py](gh.py)。用 `github.com` 网页 + `raw.githubusercontent.com` 抓取，**不依赖 GitHub API，不受 60 次/小时 匿名限流影响，无需令牌**。详见 [06-github-web.md](06-github-web.md)。
+
+```bash
+python3 gh.py withastro/astro        # star / 描述 / homepage / topics
+python3 gh.py getzola/zola --readme  # 额外输出 README 前 500 字
+python3 gh.py denoland/fresh         # 仓库迁移时自动提示新位置
+```
+
+> 说明：GitHub 前端结构可能改版，若提取规则失效按 06 的规则先抓一页 HTML 看结构再调正则。
+
 ## 单元测试（不联网）
 
 文件：[tests_gs.py](tests_gs.py)。本地跑：
